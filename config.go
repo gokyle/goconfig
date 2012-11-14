@@ -18,6 +18,8 @@ var (
 	blankLine     = regexp.MustCompile("^\\s*$")
 )
 
+var DefaultSection = "default"
+
 // ParseFile takes the filename as a string and returns a ConfigMap.
 func ParseFile(fileName string) (cfg ConfigMap, err error) {
         var file *os.File
@@ -73,6 +75,9 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 			}
 			currentSection = section
 		} else if configLine.MatchString(line) {
+                        if currentSection == "" {
+                                currentSection = DefaultSection
+                        }
 			key := configLine.ReplaceAllString(line, "$1")
 			val := configLine.ReplaceAllString(line, "$2")
 			if key == "" {
