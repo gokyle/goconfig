@@ -35,5 +35,7 @@
    Blank lines are skipped, and lines beginning with # are considered
    comments to be skipped. It is an error to have a section marker ('[]')
    without a section name.
+
+   Parsing a file can be done with the ParseFile function.
 */
 package config
