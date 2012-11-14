@@ -20,8 +20,10 @@ var (
 
 // ParseFile takes the filename as a string and returns a ConfigMap.
 func ParseFile(fileName string) (cfg ConfigMap, err error) {
+        var file *os.File
+
 	cfg = make(ConfigMap, 0)
-	file, err := os.Open(fileName)
+	file, err = os.Open(fileName)
 	if err != nil {
 		return
 	}
@@ -32,13 +34,15 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 		line           string
 		longLine       bool
 		currentSection string
+                lineBytes       []byte
+                isPrefix        bool
 	)
 
-	fmt.Println("parsing")
 	for {
 		err = nil
-		lineBytes, isPrefix, err := buf.ReadLine()
+		lineBytes, isPrefix, err = buf.ReadLine()
 		if io.EOF == err {
+                        err = nil
 			break
 		} else if err != nil {
 			break
@@ -53,6 +57,7 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 		} else {
 			line = string(lineBytes)
 		}
+
 		if commentLine.MatchString(line) {
 			continue
 		} else if blankLine.MatchString(line) {
@@ -74,7 +79,10 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 				continue
 			}
 			cfg[currentSection][key] = val
-		}
+		} else {
+                        err = fmt.Errorf("invalid config file")
+                        break
+                }
 	}
 	return
 }
