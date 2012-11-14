@@ -60,7 +60,6 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 		} else if configSection.MatchString(line) {
 			section := configSection.ReplaceAllString(line,
 				"$1")
-			fmt.Printf("section -> '%s'\n", section)
 			if section == "" {
 				err = fmt.Errorf("invalid structure in file")
 				break
@@ -75,8 +74,6 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 				continue
 			}
 			cfg[currentSection][key] = val
-
-			fmt.Printf("'%s': '%s'\n", key, val)
 		}
 	}
 	return
