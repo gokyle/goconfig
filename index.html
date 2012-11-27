@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>goconfig by gokyle</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>goconfig</h1>
+        <p>simple configuration file parser.</p>
+
+        <p class="view"><a href="https://github.com/gokyle/goconfig">View the Project on GitHub <small>gokyle/goconfig</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/gokyle/goconfig/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/gokyle/goconfig/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/gokyle/goconfig">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>goconfig provides parsing for simple configuration file.</p>
+
+<p>A configuration is expected to be in the format</p>
+
+<pre><code>[ sectionName ]
+key1 = some value
+key2 = some other value
+# we want to explain the importance and great forethought
+# in this next value.
+key3 = unintuitive value
+[ anotherSection ]
+key1 = a value
+key2 = yet another value
+#...
+</code></pre>
+
+<p>Blank lines are skipped, and lines beginning with <code>#</code> are considered
+comments to be skipped. It is an error to have a section marker ('[]')
+without a section name. <code>key =</code> lines will set the line to a blank
+value. If no section is given, the default section (<code>default</code>).</p>
+
+<p>Parsing a file can be done with the ParseFile function. It will return
+a <code>map[string]map[string]string</code>. For example, if the section <code>foo</code> is
+defined, and <code>foo = bar</code> is specified:</p>
+
+<pre><code>import config "github.com/gokyle/goconfig"
+func getFoo() string {
+        conf = config.ParseFile("config.conf")
+        return conf["foo"]["bar"]
+}
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/gokyle">gokyle</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
