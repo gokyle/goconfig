@@ -17,7 +17,7 @@
 */
 
 /*
-   package config provides parsing for simple configuration file.
+   package goconfig provides parsing for simple configuration file.
 
    A configuration is expected to be in the format
 
