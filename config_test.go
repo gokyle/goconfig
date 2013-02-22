@@ -1,34 +1,51 @@
-package config
+package goconfig
 
 import (
         "fmt"
         "testing"
 )
 
-const (
-        goodTest = "testdata/test.conf"
-        badTest = "testdata/bad.conf"
-)
+// FailWithError is a utility for dumping errors and failing the test.
+func FailWithError(t *testing.T, err error) {
+        fmt.Println("failed")
+        if err != nil {
+                fmt.Println("[!] ", err.Error())
+        }
+        t.FailNow()
+}
 
 func TestGoodConfig(t *testing.T) {
+        testFile := "testdata/test.conf"
         fmt.Printf("[+] validating known-good config... ")
-        cmap, err := ParseFile(goodTest)
+        cmap, err := ParseFile(testFile)
         if err != nil {
-                fmt.Printf("\n[!] test failure: %s\n", err.Error())
-                t.FailNow()
+                FailWithError(t, err)
         } else if len(cmap) != 2 {
-                fmt.Printf("\n[!] failed to load config file\n")
-                t.FailNow()
+                FailWithError(t, err)
+        }
+        fmt.Println("ok")
+}
+
+func TestGoodConfig2(t *testing.T) {
+        testFile := "testdata/test2.conf"
+        fmt.Printf("[+] validating second known-good config... ")
+        cmap, err := ParseFile(testFile)
+        if err != nil {
+                FailWithError(t, err)
+        } else if len(cmap) != 1 {
+                FailWithError(t, err)
+        } else if len(cmap["default"]) != 3 {
+                FailWithError(t, err)
         }
         fmt.Println("ok")
 }
 
 func TestBadConfig(t *testing.T) {
+        testFile := "testdata/bad.conf"
         fmt.Printf("[+] ensure invalid config file fails... ")
-        _, err := ParseFile(badTest)
+        _, err := ParseFile(testFile)
         if err == nil {
-                fmt.Printf("\n[!] parse should have failed, but didn't!\n")
-                t.FailNow()
+                FailWithError(t, err)
         }
         fmt.Println("ok")
 }
