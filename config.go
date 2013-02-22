@@ -1,4 +1,4 @@
-package config
+package goconfig
 
 import (
 	"bufio"
@@ -77,6 +77,9 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 		} else if configLine.MatchString(line) {
                         if currentSection == "" {
                                 currentSection = DefaultSection
+                                if !cfg.SectionInConfig(currentSection) {
+                                        cfg[currentSection] = make(map[string]string, 0)
+                                }
                         }
 			key := configLine.ReplaceAllString(line, "$1")
 			val := configLine.ReplaceAllString(line, "$2")
