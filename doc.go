@@ -34,8 +34,10 @@
 
    Blank lines are skipped, and lines beginning with # are considered
    comments to be skipped. It is an error to have a section marker ('[]')
-   without a section name.
+   without a section name; however, if the keys and values are defined
+   outside of a section, they are placed in the default section called
+   "default".
 
    Parsing a file can be done with the ParseFile function.
 */
-package config
+package goconfig
