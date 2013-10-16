@@ -1,6 +1,7 @@
 package goconfig
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"sort"
@@ -120,6 +121,22 @@ func TestWriteConfigFile(t *testing.T) {
 				FailWithError(t, err)
 			}
 		}
+	}
+	fmt.Println("ok")
+}
+
+func TestQuotedValue(t *testing.T) {
+	testFile := "testdata/test.conf"
+	fmt.Printf("[+] validating quoted value... ")
+	cmap, _ := ParseFile(testFile)
+	val := cmap["sectionName"]["key4"]
+	if val != " space at beginning and end " {
+		FailWithError(t, errors.New("Wrong value in double quotes ["+val+"]"))
+	}
+
+	val = cmap["sectionName"]["key5"]
+	if val != " is quoted with single quotes " {
+		FailWithError(t, errors.New("Wrong value in single quotes ["+val+"]"))
 	}
 	fmt.Println("ok")
 }
