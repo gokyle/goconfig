@@ -12,10 +12,11 @@ import (
 type ConfigMap map[string]map[string]string
 
 var (
-	configSection = regexp.MustCompile("^\\s*\\[\\s*(\\w+)\\s*\\]\\s*$")
-	configLine    = regexp.MustCompile("^\\s*(\\w+)\\s*=\\s*(.*)\\s*$")
-	commentLine   = regexp.MustCompile("^#.*$")
-	blankLine     = regexp.MustCompile("^\\s*$")
+	configSection    = regexp.MustCompile("^\\s*\\[\\s*(\\w+)\\s*\\]\\s*$")
+	quotedConfigLine = regexp.MustCompile("^\\s*(\\w+)\\s*=\\s*[\"'](.*)[\"']\\s*$")
+	configLine       = regexp.MustCompile("^\\s*(\\w+)\\s*=\\s*(.*)\\s*$")
+	commentLine      = regexp.MustCompile("^#.*$")
+	blankLine        = regexp.MustCompile("^\\s*$")
 )
 
 var DefaultSection = "default"
@@ -75,14 +76,18 @@ func ParseFile(fileName string) (cfg ConfigMap, err error) {
 			}
 			currentSection = section
 		} else if configLine.MatchString(line) {
+			regex := configLine
+			if quotedConfigLine.MatchString(line) {
+				regex = quotedConfigLine
+			}
 			if currentSection == "" {
 				currentSection = DefaultSection
 				if !cfg.SectionInConfig(currentSection) {
 					cfg[currentSection] = make(map[string]string, 0)
 				}
 			}
-			key := configLine.ReplaceAllString(line, "$1")
-			val := configLine.ReplaceAllString(line, "$2")
+			key := regex.ReplaceAllString(line, "$1")
+			val := regex.ReplaceAllString(line, "$2")
 			if key == "" {
 				continue
 			}
