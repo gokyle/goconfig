@@ -29,9 +29,11 @@ a `map[string]map[string]string`. For example, if the section `foo` is
 defined, and `foo = bar` is specified:
 
 ```
-import config "github.com/gokyle/goconfig"
+import "github.com/gokyle/goconfig"
+
 func getFoo() string {
-        conf = config.ParseFile("config.conf")
+        conf, err := goconfig.ParseFile("config.conf")
+	// error handling elided
         return conf["foo"]["bar"]
 }
 ```
