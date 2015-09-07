@@ -24,14 +24,17 @@ var DefaultSection = "default"
 // ParseFile takes the filename as a string and returns a ConfigMap.
 func ParseFile(fileName string) (cfg ConfigMap, err error) {
 	var file *os.File
-
-	cfg = make(ConfigMap, 0)
 	file, err = os.Open(fileName)
 	if err != nil {
 		return
 	}
 	defer file.Close()
-	buf := bufio.NewReader(file)
+	return ParseReader(file)
+}
+
+func ParseReader(r io.Reader) (cfg ConfigMap, err error) {
+	cfg = make(ConfigMap, 0)
+	buf := bufio.NewReader(r)
 
 	var (
 		line           string
@@ -186,4 +189,28 @@ func (c *ConfigMap) GetValue(section, key string) (val string, present bool) {
 
 	val, present = cm[section][key]
 	return
+}
+
+// Return a slice of strings containing all the keys in a section.
+func (c *ConfigMap) SectionKeys(section string) (keys []string, present bool) {
+	if c == nil {
+		return nil, false
+	}
+
+	if section == "" {
+		section = DefaultSection
+	}
+
+	cm := *c
+	s, ok := cm[section]
+	if !ok {
+		return nil, false
+	}
+
+	keys = make([]string, 0, len(s))
+	for key := range s {
+		keys = append(keys, key)
+	}
+
+	return keys, true
 }
