@@ -2,6 +2,9 @@ package goconfig
 
 import (
 	"bufio"
+	"encoding/base64"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -191,6 +194,15 @@ func (c *ConfigMap) GetValue(section, key string) (val string, present bool) {
 	return
 }
 
+// Retrieve the value from a key map, or provide a default.
+func (c *ConfigMap) GetValueDefault(section, key, value string) (val string) {
+	kval, ok := c.GetValue(section, key)
+	if !ok {
+		return value
+	}
+	return kval
+}
+
 // Return a slice of strings containing all the keys in a section.
 func (c *ConfigMap) SectionKeys(section string) (keys []string, present bool) {
 	if c == nil {
@@ -213,4 +225,59 @@ func (c *ConfigMap) SectionKeys(section string) (keys []string, present bool) {
 	}
 
 	return keys, true
+}
+
+// Base64 decodes a standard base64-encoded string.
+func decBase64(s string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(s)
+}
+
+// hex decodes a hex-encoded string.
+func decHex(s string) ([]byte, error) {
+	return hex.DecodeString(s)
+}
+
+type Decoder func(string) ([]byte, error)
+
+const (
+	// Base64 indicates a base64-encoded string.
+	Base64 int = iota + 1
+
+	// Hex indicates a hex-encoded string.
+	Hex
+)
+
+// Decoders contains a mapping of decoding functions.
+var Decoders = map[int]Decoder{
+	Base64: decBase64,
+	Hex:    decHex,
+}
+
+// RegisterDecoder adds a new decoding function.
+func RegisterDecoder(t int, decoder Decoder) {
+	Decoders[t] = decoder
+}
+
+// ErrKeyNotPresent is returned from DecodeValue when no such key
+// exists in the specified section.
+var ErrKeyNotPresent = errors.New("goconfig: key not present")
+
+// ErrDecoderUnavailable is returned when an invalid decoder is
+// specified.
+var ErrDecoderUnavailable = errors.New("goconfig: decoder unavailable")
+
+// DecodeValue retrieves the value of a key and applies a decoding
+// function to retrieve a byte slice.
+func (c *ConfigMap) DecodeValue(section, key string, decoder int) ([]byte, error) {
+	v, ok := c.GetValue(section, key)
+	if !ok {
+		return nil, ErrKeyNotPresent
+	}
+
+	dec, ok := Decoders[decoder]
+	if !ok {
+		return nil, ErrDecoderUnavailable
+	}
+
+	return dec(v)
 }
